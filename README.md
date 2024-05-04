@@ -62,7 +62,6 @@ The home page should be easily editable through flat pages or similar methods.
 The entire application should be editable for international use. Please rewrite all content in English and adjust the scheduling to not be fixed to Japan Standard Time (JST), making it usable worldwide.
 
 
-This English version includes the specific changes you requested and provides a clear guide for international developers to set up and understand the system.
 
 
 

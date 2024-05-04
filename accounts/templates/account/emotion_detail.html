@@ -1,0 +1,314 @@
+
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感情状態</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+</head>
+{% comment %} <body> {% endcomment %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">感情スコア</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">幸福度</h5>
+                    <p class="card-text">{{ user_happiness_score|floatformat:2 }} (全体平均: {{ overall_happiness_avg|floatformat:2 }})</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">ストレス度</h5>
+                    <p class="card-text">{{ user_stress_score|floatformat:2 }} (全体平均: {{ overall_stress_avg|floatformat:2 }})</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">孤独感</h5>
+                    <p class="card-text">{{ user_loneliness_score|floatformat:2 }} (全体平均: {{ overall_loneliness_avg|floatformat:2 }})</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+        <p>
+            ストレス度、孤独感、幸福度のスコアは、あなたの最新の感情データから算出されています。
+            全体平均との比較から、あなたの感情状態を確認することができます。
+        </p>
+        </div>
+    </div>
+</div>
+{% comment %} </body> {% endcomment %}
+
+<h2>時系列　メンタル　チャート</h2>
+<canvas id="emotionChart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('emotionChart').getContext('2d');
+var emotionChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [{% for emotion in emotions %}'{{ emotion.created_at|date:"Y-m-d H:i" }}',{% endfor %}],
+        datasets: [
+        {
+            label: 'Happiness',
+            data: [{% for emotion in emotions %}{{ emotion.happiness }},{% endfor %}],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        },
+        
+        {
+            label: 'Joy',
+            data: [{% for emotion in emotions %}{{ emotion.joy }},{% endfor %}],
+            borderColor: 'rgb(255, 99, 132)',
+            tension: 0.1
+        },
+        {
+            label: 'Anger',
+            data: [{% for emotion in emotions %}{{ emotion.anger }},{% endfor %}],
+            borderColor: 'rgb(54, 162, 235)',
+            tension: 0.1
+        },
+        {
+            label: 'Sadness',
+            data: [{% for emotion in emotions %}{{ emotion.sadness }},{% endfor %}],
+            borderColor: 'rgb(255, 206, 86)',
+            tension: 0.1
+        },
+
+        {
+            label: 'Confidence',
+            data: [{% for emotion in emotions %}{{ emotion.confidence }},{% endfor %}],
+            borderColor: 'rgb(153, 102, 255)',
+            tension: 0.1
+        },
+        {
+            label: 'Confusion',
+            data: [{% for emotion in emotions %}{{ emotion.confusion }},{% endfor %}],
+            borderColor: 'rgb(255, 159, 64)',
+            tension: 0.1
+        },
+        {
+            label: 'Fear',
+            data: [{% for emotion in emotions %}{{ emotion.fear }},{% endfor %}],
+            borderColor: 'rgb(199, 199, 199)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: false,
+                min: 1
+            }
+        }
+    }
+});
+</script>
+
+
+<!-- Happiness Chart のための新しい canvas 要素を追加 -->
+<canvas id="happinessChart"></canvas>
+<canvas id="joyChart"></canvas>
+<canvas id="angerChart"></canvas>
+<canvas id="sadnessChart"></canvas>
+<canvas id="confidenceChart"></canvas>
+<canvas id="confusionChart"></canvas>
+<canvas id="fearChart"></canvas>
+
+<script>
+// 既存のコード...
+
+// Happiness chart のための新しい canvas 要素を使用
+var ctxHappiness = document.getElementById('happinessChart').getContext('2d');
+var happinessChart = new Chart(ctxHappiness, {
+    type: 'line',
+    data: {
+        labels: [{% for emotion in emotions %}'{{ emotion.created_at|date:"Y-m-d H:i" }}',{% endfor %}],
+        datasets: [{
+            label: 'Happiness',
+            data: [{% for emotion in emotions %}{{ emotion.happiness }},{% endfor %}],
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: false,
+                min: 1
+            }
+        }
+    }
+});
+</script>
+
+<script>
+    var labels = [{% for emotion in emotions %}'{{ emotion.created_at|date:"Y-m-d H:i" }}',{% endfor %}];
+    
+    // Joy Chart
+    var joyData = [{% for emotion in emotions %}{{ emotion.joy }},{% endfor %}];
+    var ctxJoy = document.getElementById('joyChart').getContext('2d');
+    new Chart(ctxJoy, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Joy',
+                data: joyData,
+                borderColor: 'rgb(255, 99, 132)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    
+    // Anger Chart
+    var angerData = [{% for emotion in emotions %}{{ emotion.anger }},{% endfor %}];
+    var ctxAnger = document.getElementById('angerChart').getContext('2d');
+    new Chart(ctxAnger, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Anger',
+                data: angerData,
+                borderColor: 'rgb(54, 162, 235)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    
+    // 以下、Sadness, Confidence, Confusion, Fear についても同様に設定
+    </script>
+
+<script>
+    // Sadness Chart
+    var sadnessData = [{% for emotion in emotions %}{{ emotion.sadness }},{% endfor %}];
+    var ctxSadness = document.getElementById('sadnessChart').getContext('2d');
+    new Chart(ctxSadness, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Sadness',
+                data: sadnessData,
+                borderColor: 'rgb(255, 206, 86)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    
+    // Confidence Chart
+    var confidenceData = [{% for emotion in emotions %}{{ emotion.confidence }},{% endfor %}];
+    var ctxConfidence = document.getElementById('confidenceChart').getContext('2d');
+    new Chart(ctxConfidence, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Confidence',
+                data: confidenceData,
+                borderColor: 'rgb(153, 102, 255)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    
+    // Confusion Chart
+    var confusionData = [{% for emotion in emotions %}{{ emotion.confusion }},{% endfor %}];
+    var ctxConfusion = document.getElementById('confusionChart').getContext('2d');
+    new Chart(ctxConfusion, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Confusion',
+                data: confusionData,
+                borderColor: 'rgb(255, 159, 64)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    
+    // Fear Chart
+    var fearData = [{% for emotion in emotions %}{{ emotion.fear }},{% endfor %}];
+    var ctxFear = document.getElementById('fearChart').getContext('2d');
+    new Chart(ctxFear, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Fear',
+                data: fearData,
+                borderColor: 'rgb(199, 199, 199)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    min: 1
+                }
+            }
+        }
+    });
+    </script>

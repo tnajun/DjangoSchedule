@@ -1,0 +1,13 @@
+
+<!-- Schedule/templates/calendar.html -->
+
+<h1>Available Schedules</h1>
+
+{% if events %}
+    {% for event in events %}
+        <h2>{{ event.summary }}</h2>
+        <p>{{ event.start.dateTime }} to {{ event.end.dateTime }}</p>
+    {% endfor %}
+{% else %}
+    <p>No events available.</p>
+{% endif %}

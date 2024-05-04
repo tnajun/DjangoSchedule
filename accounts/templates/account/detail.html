@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ customuser.nickname }} | POSII{% endblock %}
+{% block contents %}
+<div class="form-content">
+  <h1>{{ customuser.nickname }}</h1>
+  <p class="mt-5"><img src="{% if customuser.thumbnail %}{{ customuser.thumbnail.url }}{% else %}{% static 'images/no_photo.png' %}{% endif %}" class="rounded-circle profile-photo"></p>
+
+    <!-- Follow Button and New Link (centered) -->
+    <div class="mt-5 d-flex justify-content-center">
+      {% if user.id != customuser.id %}
+        {% if is_following %}
+          <form action="{% url 'accounts:rm_relation' pk=customuser.id %}" method="post" class="mr-2">
+            <button type="submit" class="btn btn-outline-danger btn-sm" name="button">
+              Unfollow
+            </button>
+            {% csrf_token %}
+          </form>
+        {% else %}
+          <form action="{% url 'accounts:mk_relation' pk=customuser.id %}" method="post" class="mr-2">
+            <button type="submit" class="btn btn-outline-primary btn-sm" name="button">
+              Follow
+            </button>
+            {% csrf_token %}
+          </form>
+        {% endif %}
+        {% if customuser.is_therapist %}
+        <a href="{% url 'schedule:view_schedule_django' slug=customuser.slug %}" class="btn btn-outline-primary btn-sm" role="button">
+          予約
+        </a>
+        {% endif %}
+      {% endif %}
+      {% comment %} {% if not customuser.is_ai and not customuser.is_therapist %}
+      <a href="{% url 'accounts:user_emotion' slug=customuser.slug %}" class="btn btn-outline-secondary btn-sm" role="button">
+        感情分析
+      </a>
+      {% endif %} {% endcomment %}
+    </div>
+
+  <p class="mt-5">{% if customuser.description %}{{ customuser.description | linebreaks }}{% else %}本文はありません。{% endif %}</p>
+
+  <!-- カウンセリング情報の表示 -->
+  {% if customuser.is_therapist and counseling_info %}
+    <p class="mt-5">カウンセリングを学んだ所: {{ counseling_info.counseling_place }}</p>
+    <p class="mt-2">カウンセリング時間（分）: {{ counseling_info.counseling_time }}</p>
+  {% endif %}
+
+  <!-- 過去のレビュー -->
+  {% comment %} {% if customuser.is_therapist %}
+    {% if customuser.received_reviews.all %}
+      <h2 class="mt-5">過去のレビュー</h2>
+      {% for review in customuser.received_reviews.all %}
+        <div class="card mb-5 text-left">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-1">
+                <a href="{% url 'accounts:detail' review.author.slug %}"><img src="{% if review.author.thumbnail %}{{ review.author.thumbnail.url }}{% else %}{% static 'images/no_photo.png' %}{% endif %}" class="rounded-circle profile-post-photo"></a>
+              </div>
+              <div class="col-10 ml-3">
+                <a href="{% url 'accounts:detail' review.author.slug %}" class="text-secondary">{{ review.author.nickname }}</a><br>
+                <small class="text-muted">{{ review.created_at|date:"n月j日 H時i分" }}</a></small>
+              </div>
+            </div>
+            <p class="card-text">評価: {{ review.rating|stars }}</p>
+            <p class="write-text">コメント: {{ review.content }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>まだレビューはありません。</p>
+    {% endif %}
+
+
+
+    <!-- レビューフォーム -->
+    <form method="post" action="{% url 'accounts:add_review' slug=customuser.slug %}">
+      {% csrf_token %}
+      {{ review_form.as_p }}
+      <button type="submit" class="btn btn-primary btn-sm">レビューを投稿</button>
+    </form>
+  {% endif %} {% endcomment %}
+
+
+  {% comment %} {% for post in user_posts %}
+  <div class="card mb-5 text-left">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-1">
+          <a href="{% url 'accounts:detail' post.author.slug %}"><img src="{% if post.author.thumbnail %}{{ post.author.thumbnail.url }}{% else %}{% static 'images/no_photo.png' %}{% endif %}" class="rounded-circle profile-post-photo"></a>
+        </div>
+        <div class="col-10 ml-3">
+          <a href="{% url 'accounts:detail' post.author.slug %}" class="text-secondary">{{ post.author.nickname }}</a><br>
+          <small class="text-muted"><a href="{% url 'timeline:post_detail' pk=post.id %}" class="text-secondary">{{ post.created_at | date:"n月j日 H時i分" }}</a></small>
+          <small class="text-muted">{{ post.get_public_display }}</small>
+        </div>
+      </div>
+      <p class="card-text mt-2">
+        <!-- {{ post.text | linebreaks }} -->
+      </p>
+      <p class="write-text">{{ post.text | linebreaks }}</p>
+      <!-- その他のコード -->
+    </div>
+    {% if post.post_photo %}
+    <img class="card-img-bottom" src="{{ post.post_photo.url }}" alt="Card image cap">
+    {% endif %}
+  </div>
+  {% endfor %} {% endcomment %}
+{% comment %}   
+
+  <nav>
+    <ul class="pagination justify-content-center">
+    {% if user_posts.has_previous %}
+      <li class="page-item">
+        <a class="page-link text-info" href="?page={{ user_posts.previous_page_number }}" tabindex="-1">&laquo;</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+    {% endif %}
+    {% for i in user_posts.paginator.page_range %}
+    {% if user_posts.number == i or i <= user_posts.number|add:"2" and i >= user_posts.number|add:"-2" %}
+      {% if user_posts.number == i %}
+        <li class="page-item disabled"><span class="page-link">{{ i }}</span></li>
+      {% else %}
+        <li class="page-item"><a class="page-link text-info" href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% elif i == 1 or i == user_posts.paginator.num_pages or i == user_posts.number|add:"-10" or i == user_posts.number|add:"10" %}
+      <li class="page-item"><a class="page-link text-info" href="?page={{ i }}">{{ i }}</a></li>
+    {% elif i == user_posts.number|add:"-4" or i == user_posts.number|add:"4" or i == user_posts.number|add:"-11" or i == user_posts.number|add:"11" %}
+      <li class="page-item disabled"><span class="page-link">...</span></li>
+    {% endif %}
+    {% endfor %}
+    {% if user_posts.has_next %}
+      <li class="page-item">
+        <a class="page-link text-info" href="?page={{ user_posts.next_page_number }}">&raquo;</a>
+      </li>
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&raquo;</span>
+      </li>
+    {% endif %}
+    </ul>
+  </nav> {% endcomment %}
+
+
+</div>
+{% endblock %}

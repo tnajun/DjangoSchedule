@@ -1,0 +1,74 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Meeting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <!-- Additional styles if needed -->
+</head>
+<body>
+
+<h1>Select a Slot</h1>
+
+<div id="calendar"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+<script>
+function scheduleMeeting(startTime, endTime, therapistId) {
+    if(confirm("Do you want to schedule a meeting from " + startTime + " to " + endTime + "?")) {
+        // Create a data object to send with the POST request
+        var eventData = {
+            'start_time': startTime,
+            'end_time': endTime,
+            'therapist_id': therapistId,
+        };
+
+        // Send a POST request to the server to create the event
+        $.ajax({
+            type: 'POST',
+            url: '/create_event/',  // Update the URL to the actual endpoint
+            data: JSON.stringify(eventData),
+            contentType: 'application/json; charset=utf-8',
+            success: function(response) {
+                // Handle the success response from the server, if needed
+                alert('Event created successfully!');
+            },
+            error: function(error) {
+                // Handle any errors, if needed
+                alert('Error creating the event.');
+            }
+        });
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    $('#calendar').fullCalendar({
+        defaultView: 'agendaWeek',
+        events: [
+            {% for slot_start, slot_end in available_slots %}
+                {
+                    title: 'Available',
+                    start: '{{ slot_start.isoformat }}',
+                    end: '{{ slot_end.isoformat }}',
+                    color: 'green',  // Use a color to indicate availability
+                },
+            {% endfor %}
+        ],
+        timeFormat: 'H(:mm)',
+        eventClick: function(event) {
+            if (event.title === 'Available') {
+                scheduleMeeting(event.start.toISOString(), event.end.toISOString(), {{ therapist_id }});
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>

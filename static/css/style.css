@@ -1,0 +1,42 @@
+body {
+  padding-top: 5rem;
+}
+
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  max-width: 536px;
+  margin: auto;
+}
+
+.messages {
+  list-style: none;
+  padding: 0;
+}
+
+.post-photo {
+  width: 50px;
+  height: 50px;
+}
+
+.form-content {
+  max-width: 330px;
+  margin: auto;
+}
+
+.form-group label {
+  display: none;
+}
+
+.form-group .form-check label {
+  display: inline-block;
+}
+
+.form-group {
+  word-break: break-all;
+}
+
+.profile-post-photo {
+  width: 50px;
+  height: 50px;
+}

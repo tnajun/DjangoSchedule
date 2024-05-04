@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ therapist.nickname }}'s Calendar</h1>
+
+  <ul>
+    {% for event in events %}
+      <li>{{ event.start.dateTime }}: {{ event.summary }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

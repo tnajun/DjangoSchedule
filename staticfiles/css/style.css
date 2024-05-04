@@ -1,0 +1,84 @@
+body {
+  padding-top: 5rem;
+}
+
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  max-width: 536px;
+  margin: auto;
+}
+
+.messages {
+  list-style: none;
+  padding: 0;
+}
+
+.post-photo {
+  width: 50px;
+  height: 50px;
+}
+
+.form-content {
+  max-width: 330px;
+  margin: auto;
+}
+
+.form-group label {
+  display: none;
+}
+
+.form-group .form-check label {
+  display: inline-block;
+}
+
+.form-group {
+  word-break: break-all;
+}
+
+.profile-post-photo {
+  width: 50px;
+  height: 50px;
+}
+
+
+
+
+
+/* eyduka 追記 */
+
+@media screen and (max-width: 480px){
+  .container {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+  .starter-template {
+    padding: 0;
+  }
+  .post-photo {
+    width: 45px;
+    height: 45px;
+  }
+  .form-control{
+    font-size: 0.85em;
+  }
+  .form-control-file{
+    font-size: 0.85em;
+  }
+  .open-option{
+    font-size: 0.85em;
+  }
+
+  .profile-post-photo {
+    width: 45px;
+    height: 45px;
+  }
+
+  .ml-3{
+    margin-left: 1.5em!important;
+  }
+  
+  .pagination{
+    font-size: 0.85em;
+  }
+}

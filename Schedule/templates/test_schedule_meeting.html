@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 他のヘッダーセクション -->
+</head>
+<body>
+
+<h1>Select a Slot</h1>
+
+<button id="send-button">Send Data</button>
+
+<div id="response-container"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#send-button").click(function () {
+            $.ajax({
+                type: "POST",
+                url: "test_create_event/",  // サーバーのエンドポイントURLに置き換えてください
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',  // CSRFトークンを含める
+                    key1: "value1",  // 送信するデータ
+                    key2: "value2"
+                },
+                success: function (response) {
+                    $("#response-container").html("Server response: " + response.message + response.key1 + response.key2);
+                },
+                error: function (error) {
+                    $("#response-container").html("Error creating the event: " + error.responseText);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

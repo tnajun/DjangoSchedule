@@ -1,0 +1,16 @@
+<!-- Schedule/templates/schedule_form.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Schedule Appointment</title>
+</head>
+<body>
+    <h1>Schedule Appointment</h1>
+    <form method="post" action="{% url 'create_schedule' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create</button>
+    </form>
+</body>
+</html>

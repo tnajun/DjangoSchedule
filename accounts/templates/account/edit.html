@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bootstrap4 %}
+{% block title %}プロフィール | POSII{% endblock %}
+{% block contents %}
+<div class="container">
+  <h1 class="mb-4">プロフィール</h1>
+        <a href="{% url 'accounts:detail' user.slug %}" class="text-secondary">{{ user.nickname }}</a><br>
+    <div class="card">
+      <div class="card-body">
+        <form method="post" action="/accounts/edit/" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {% for field in form %}
+            {{ field.label }}<br>
+            {{ field }} <br><br>
+        {% endfor %}
+
+        <button class="btn btn-info btn-block" type="submit">保存</button>
+        </form>
+      </div>
+    </div>
+</div>
+{% endblock %}

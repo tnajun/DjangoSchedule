@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Meeting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+    <!-- Additional styles if needed -->
+</head>
+<body>
+
+<h1>{{ therapist.nickname }} カウンセラーとのスケジュールを選択</h1>
+
+
+<div id="calendar"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+
+<script>
+function scheduleMeeting(startTime, endTime, therapistSlug) {
+    if(confirm("「" + convertUTCToJapanTime(startTime) + "」から「" + convertUTCToJapanTime(endTime) + "」までのミーティングをスケジュールしますか？")) {
+
+        // Send a POST request to the server to create the event
+        $.ajax({
+            type: "POST",
+            url: "/schedule/view_schedule_django/create_event_django/",  // サーバーのエンドポイントURLに置き換えてください
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',  // CSRFトークンを含める
+                'start_time': startTime,
+                'end_time': endTime,
+                'therapist_slug': therapistSlug,
+            },
+            success: function(response) {
+                // Handle the success response from the server, if needed
+                alert( response.reservation_date + '日' +response.start_time + 'にカウンセリングが正常に作成されました！');
+            },
+            error: function(error) {
+                // Handle any errors, if needed
+                alert('Error creating the event.');
+            }
+        });
+    }
+}
+
+// 日本時間に変換する関数
+function convertUTCToJapanTime(utcDateTime) {
+  const japanTime = new Date(utcDateTime);
+  japanTime.setHours(japanTime.getHours() ); // 日本時間はUTC+9
+
+  const year = japanTime.getFullYear();
+  const month = japanTime.getMonth() + 1;
+  const day = japanTime.getDate();
+  const hours = japanTime.getHours();
+  const minutes = japanTime.getMinutes();
+
+  const japaneseDateTime = `${year}年${month}月${day}日${hours}時${minutes}分`;
+  return japaneseDateTime;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    $('#calendar').fullCalendar({
+        defaultView: 'agendaWeek',
+        events: [
+            {% for slot_start, slot_end in fullcalendar_events %}
+                {
+                    title: 'Available',
+                    start: '{{ slot_start.isoformat }}',
+                    end: '{{ slot_end.isoformat }}',
+                    color: 'green',  // Use a color to indicate availability
+                },
+            {% endfor %}
+        ],
+        timeFormat: 'H(:mm)',
+        eventClick: function(event) {
+            if (event.title === 'Available') {
+                scheduleMeeting(event.start.toISOString(), event.end.toISOString(), "{{ therapist.slug }}" );
+            }
+        }
+    });
+});
+</script>
+</body>
+</html>
+

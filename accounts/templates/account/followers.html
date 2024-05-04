@@ -1,0 +1,32 @@
+
+{% load static %}
+
+<tbody>
+{# follower_list：自分をお気に入り登録してくれているユーザーのリスト #}
+{% for item in follower_list %}
+    <tr class="text">
+        <td class="text-center">{{ item.username }}</td>
+        <td class="text-center align-middle">
+            {# 対象ユーザーを自分もお気に入り登録している場合 #}                                        
+            {% if item in following_list %}
+                {# Unfollowボタンで対象ユーザーに対して、rm_relation関数を呼び出してお気に入り解除 #}  
+                <form action="{% url 'accounts:rm_relation' pk=item.id %}" method="post">
+                    <button type="submit" class="btn btn-outline-danger btn-sm" name="button">
+                        Unfollow
+                    </button>
+                    {% csrf_token %}
+                </form>
+            {# 対象ユーザーを自分がお気に入り登録していない場合 #}     
+            {% else %}
+                <form action="{% url 'accounts:mk_relation' pk=item.id %}" method="post">
+                    <button type="submit" class="btn btn-outline-primary btn-sm" name="button">
+                        Follow
+                    </button>
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+    </tr>
+{% endfor %}
+</tbody>
+
+

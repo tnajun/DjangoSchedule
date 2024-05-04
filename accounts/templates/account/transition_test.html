@@ -1,0 +1,20 @@
+{% extends 'kakeibo_base.html' %}
+{% load static %}
+{% block title %}{{ customuser.username }} | POSII{% endblock %}
+{% block content %}
+
+<div class="form-content">
+  <h1>{{ customuser.username }}</h1>
+  <p class="mt-5"><img src="{% if customuser.thumbnail %}{{ customuser.thumbnail.url }}{% else %}{% static 'images/no_photo.png' %}{% endif %}" class="rounded-circle profile-photo"></p>
+  <p class="mt-5">{% if customuser.description %}{{ customuser.description | linebreaks }}{% else %}本文はありません。{% endif %}</p>
+</div>
+
+{% autoescape off %}
+{{ transition_plot }}
+{% endautoescape %}
+
+{% endblock %}
+
+{% block extrajs %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>スケジュールを編集</title>
+</head>
+<body>
+    <h1>スケジュールを編集</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_day_of_week">曜日:</label><br>
+        <select name="day_of_week" id="id_day_of_week">
+            <option value="0">月曜日</option>
+            <option value="1">火曜日</option>
+            <option value="2">水曜日</option>
+            <option value="3">木曜日</option>
+            <option value="4">金曜日</option>
+            <option value="5">土曜日</option>
+            <option value="6">日曜日</option>
+        </select><br><br>
+
+        <label for="id_start_time">開始時間:</label><br>
+        <input type="time" id="id_start_time" name="start_time" step="1800"><br><br> <!-- 30分ごとに設定 -->
+
+        <label for="id_end_time">終了時間:</label><br>
+        <input type="time" id="id_end_time" name="end_time" step="1800"><br><br>
+
+        <button type="submit">保存</button>
+    </form>
+
+    <h2>あなたのスケジュール:</h2>
+    <ul>
+        {% for schedule in schedules %}
+            <li>{{ schedule.get_day_of_week_display }}: {{ schedule.start_time }} - {{ schedule.end_time }}
+                <form method="post" action="{% url 'schedule:delete_schedule' schedule.id %}">
+                    {% csrf_token %}
+                    <button type="submit">削除</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>スケジュールがありません</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

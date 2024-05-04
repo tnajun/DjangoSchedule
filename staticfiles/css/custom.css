@@ -1,0 +1,33 @@
+/* このファイルにスタイリングコードを追加 */
+
+.filter-bar {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.filter-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.filter-button.active {
+  background-color: #45a049;
+}
+
+.user-list {
+  display: block;
+}
+
+.user-list.ai-list,
+.user-list.therapist-list {
+  display: none;
+}

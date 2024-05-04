@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}トップページ | POSII{% endblock %}
+{% block contents %}
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div style="display: flex;">
+            <span id="title-prev" class="dli-chevron-round-left" style="display: none;"></span>
+            <div style="display: flex;">
+                <div id="title-list" class="title-slider">
+                    <div>
+                        <h4><b id="counselor-title">カウンセラー一覧</b></h4>
+                    </div>
+                    <div>
+                        <h4><b id="ai-title">AI一覧</b></h4>
+                    </div>
+                    <div>
+                        <h4><b id="user-title">ユーザー一覧</b></h4>
+                    </div>
+                </div>
+            </div>
+            <span id="title-next" class="dli-chevron-round-right"></span>
+        </div>
+
+        <!--<div id="carouselUsers" class="carousel slide" data-ride="carousel">-->
+        <div id="carouselUsers" class="carousel slide content-slider" data-ride="false">
+            {% comment %} <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#carouselUsers" data-slide-to="0" class="active"></li>
+                <li data-target="#carouselUsers" data-slide-to="1"></li>
+                <li data-target="#carouselUsers" data-slide-to="2"></li>
+            </ol> {% endcomment %}
+
+            <!-- Slides -->
+            {% comment %} <div class="carousel-inner"> {% endcomment %}
+                <div id="counselorContent">
+                    <!-- Slide 1: object_list -->
+                    {% comment %} <div class="carousel-item active"> {% endcomment %}
+                        <table width="100%" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">ユーザー</th>
+                                    <th class="text-center">画像</th>
+                                    <th class="text-center">Follow/Unfollow</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for therapist_user in therapist_users %}
+                                <tr class="{% cycle 'table-secondary' 'table-light' %} gradeX text-center">
+                                    <td class="text-center" style="width: 30%">{{ therapist_user.nickname }}</td>
+                                    <td class="text-center" style="width: 30%">
+                                        {% if therapist_user.thumbnail %}
+                                        <a href="{% url 'accounts:detail' therapist_user.slug %}"
+                                            class="text-secondary">
+                                            <img src="{{ therapist_user.thumbnail.url }}"
+                                                class="rounded-circle profile-post-photo">
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'accounts:detail' therapist_user.slug %}"
+                                            class="text-secondary">
+                                            <img src="{% static 'images/no_photo.png' %}"
+                                                class="rounded-circle post-photo">
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center" style="width: 40%">
+                                        {% if therapist_user in following_list %}
+                                        <form action="{% url 'accounts:rm_relation' pk=therapist_user.id %}"
+                                            method="post">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" name="button">
+                                                Unfollow
+                                            </button>
+                                            {% csrf_token %}
+                                        </form>
+                                        {% else %}
+                                        <form action="{% url 'accounts:mk_relation' pk=therapist_user.id %}"
+                                            method="post">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm" name="button">
+                                                Follow
+                                            </button>
+                                            {% csrf_token %}
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+
+                        <nav>
+                            <ul class="pagination justify-content-center">
+                                {% if therapist_users_page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link text-info"
+                                        href="?therapistpage={{ therapist_users_page_obj.previous_page_number }}"
+                                        tabindex="-1">&laquo;</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                                {% endif %}
+                                {% for i in therapist_users_page_obj.paginator.page_range %}
+                                {% if therapist_users_page_obj.number == i %}
+                                <li class="page-item disabled"><span class="page-link">{{ i }}</span></li>
+                                {% else %}
+                                <li class="page-item"><a class="page-link text-info" href="?therapistpage={{ i }}">{{ i }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+                                {% if therapist_users_page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link text-info"
+                                        href="?therapistpage={{ therapist_users_page_obj.next_page_number }}">&raquo;</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+
+                    </div>
+
+                    <!-- Slide 2: ai_users -->
+                    {% comment %} <div class="carousel-item"> {% endcomment %}
+                        <div id="aiContent">
+                            <table width="100%" class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">ユーザー</th>
+                                        <th class="text-center">画像</th>
+                                        <th class="text-center">Follow/Unfollow</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ai_user in ai_users %}
+                                    <tr class="{% cycle 'table-secondary' 'table-light' %} gradeX text-center">
+                                        <td class="text-center" style="width: 30%">{{ ai_user.nickname }}</td>
+                                        <td class="text-center" style="width: 30%">
+                                            {% if ai_user.thumbnail %}
+                                            <a href="{% url 'accounts:detail' ai_user.slug %}" class="text-secondary">
+                                                <img src="{{ ai_user.thumbnail.url }}"
+                                                    class="rounded-circle profile-post-photo">
+                                            </a>
+                                            {% else %}
+                                            <a href="{% url 'accounts:detail' ai_user.slug %}" class="text-secondary">
+                                                <img src="{% static 'images/no_photo.png' %}"
+                                                    class="rounded-circle post-photo">
+                                            </a>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center" style="width: 40%">
+                                            {% if ai_user in following_list %}
+                                            <form action="{% url 'accounts:rm_relation' pk=ai_user.id %}" method="post">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                    name="button">
+                                                    Unfollow
+                                                </button>
+                                                {% csrf_token %}
+                                            </form>
+                                            {% else %}
+                                            <form action="{% url 'accounts:mk_relation' pk=ai_user.id %}" method="post">
+                                                <button type="submit" class="btn btn-outline-primary btn-sm"
+                                                    name="button">
+                                                    Follow
+                                                </button>
+                                                {% csrf_token %}
+                                            </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </tbody>
+                            </table>
+
+                            <nav>
+                                <ul class="pagination justify-content-center">
+                                    {% if ai_users_page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link text-info"
+                                            href="?aipage={{ ai_users_page_obj.previous_page_number }}"
+                                            tabindex="-1">&laquo;</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                                    {% endif %}
+                                    {% for i in ai_users_page_obj.paginator.page_range %}
+                                    {% if ai_users_page_obj.number == i %}
+                                    <li class="page-item disabled"><span class="page-link">{{ i }}</span></li>
+                                    {% else %}
+                                    <li class="page-item"><a class="page-link text-info" href="?aipage={{ i }}">{{ i }}</a></li>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% if ai_users_page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link text-info"
+                                            href="?aipage={{ ai_users_page_obj.next_page_number }}">&raquo;</a>
+                                    </li>
+                                    {% else %}
+                                    <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+
+                        </div>
+
+                        <!-- Slide 3: therapist_users -->
+                        {% comment %} <div class="carousel-item"> {% endcomment %}
+                            <div id="userContent">
+                                <table width="100%" class="table table-striped table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">ユーザー</th>
+                                            <th class="text-center">画像</th>
+                                            <th class="text-center">Follow/Unfollow</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in object_list %}
+                                        <tr class="{% cycle 'table-secondary' 'table-light' %} gradeX text-center">
+                                            <td class="text-center" style="width: 30%">{{ item.nickname }}</td>
+                                            <td class="text-center" style="width: 30%">
+                                                {% if item.thumbnail %}
+                                                <a href="{% url 'accounts:detail' item.slug %}" class="text-secondary">
+                                                    <img src="{{ item.thumbnail.url }}"
+                                                        class="rounded-circle profile-post-photo">
+                                                </a>
+                                                {% else %}
+                                                <a href="{% url 'accounts:detail' item.slug %}" class="text-secondary">
+                                                    <img src="{% static 'images/no_photo.png' %}"
+                                                        class="rounded-circle post-photo">
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center" style="width: 40%">
+                                                {% if item in following_list %}
+                                                <form action="{% url 'accounts:rm_relation' pk=item.id %}"
+                                                    method="post">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                        name="button">
+                                                        Unfollow
+                                                    </button>
+                                                    {% csrf_token %}
+                                                </form>
+                                                {% else %}
+                                                <form action="{% url 'accounts:mk_relation' pk=item.id %}"
+                                                    method="post">
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm"
+                                                        name="button">
+                                                        Follow
+                                                    </button>
+                                                    {% csrf_token %}
+                                                </form>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </tbody>
+                                </table>
+
+                                <nav>
+                                    <ul class="pagination justify-content-center">
+                                        {% if all_users_page_obj.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link text-info"
+                                                href="?allpage={{ all_users_page_obj.previous_page_number }}"
+                                                tabindex="-1">&laquo;</a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                                        {% endif %}
+                                        {% for i in all_users_page_obj.paginator.page_range %}
+                                        {% if all_users_page_obj.number == i %}
+                                        <li class="page-item disabled"><span class="page-link">{{ i }}</span></li>
+                                        {% else %}
+                                        <li class="page-item"><a class="page-link text-info" href="?allpage={{ i }}">{{ i }}</a></li>
+                                        {% endif %}
+                                        {% endfor %}
+                                        {% if all_users_page_obj.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link text-info"
+                                                href="?allpage={{ all_users_page_obj.next_page_number }}">&raquo;</a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+
+                        {% comment %} <!-- Controls -->
+                        <a class="carousel-control-prev" href="#carouselUsers" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">前</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselUsers" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">次</span>
+                        </a> {% endcomment %}
+                        {% comment %} <div id="carouselUsers" class="carousel slide" data-ride="carousel">
+                            <button class="btn btn-primary" onclick="prevSlide()">Previous</button>
+                            <button class="btn btn-primary" onclick="nextSlide()">Next</button>
+                        </div> {% endcomment %}
+                    </div>
+                </div>
+            </div>
+
+
+            {% comment %}
+            <script>
+                $(document).ready(function () {
+                    var carouselUsers = $('#carouselUsers');
+
+                    // カルーセルの自動切り替えを無効にする
+                    carouselUsers.carousel({
+                        interval: false
+                    });
+
+                    // カルーセルのコントロールがクリックされたときにスライドを切り替える
+                    carouselUsers.on('click', '.carousel-control-prev', function () {
+                        carouselUsers.carousel('prev');
+                    });
+                    carouselUsers.on('click', '.carousel-control-next', function () {
+                        carouselUsers.carousel('next');
+                    });
+                });
+            </script> {% endcomment %}
+
+            <script>
+                const contentList = ["counselor", "ai", "user"]
+                function checkNowContent() {
+                    const s = document.getElementById("carouselUsers").getBoundingClientRect();
+                    for (const content of contentList) {
+                        const rect = document.getElementById(content + "Content").getBoundingClientRect();
+                        if (s.left - s.width / 2 < rect.left && rect.right < s.right + s.width / 2) {
+                            return content;
+                        }
+                    }
+                    return null;
+                }
+                function showContentByIndex(index) {
+                    const s = document.getElementById("carouselUsers");
+                    s.scrollTo({ "left": s.scrollWidth * index / 3, "behavior": "smooth" });
+                }
+                function showArrow(content) {
+                    if (contentList[0] === content) {
+                        document.getElementById("title-prev").style.display = "none";
+                        document.getElementById("title-next").style.display = "block";
+                    } else if (contentList[contentList.length - 1] === content) {
+                        document.getElementById("title-prev").style.display = "block";
+                        document.getElementById("title-next").style.display = "none";
+                    } else {
+                        document.getElementById("title-prev").style.display = "block";
+                        document.getElementById("title-next").style.display = "block";
+                    }
+                }
+                window.addEventListener("DOMContentLoaded", () => {
+                    const contentId = sessionStorage.getItem("contentId");
+                    if (contentId !== null) {
+                        document.getElementById(contentId + 'Content').scrollIntoView({ "behavior": "instant" });
+                    }
+                    showArrow(checkNowContent());
+                });
+                window.addEventListener("beforeunload", () => {
+                    sessionStorage.setItem("contentId", checkNowContent());
+                });
+                document.getElementById("carouselUsers").addEventListener("scroll", function () {
+                    const s = document.getElementById("title-list");
+                    const ratio = this.scrollLeft / (this.scrollWidth - this.clientWidth)
+                    s.scrollLeft = (s.scrollWidth - s.clientWidth) * ratio;
+                    showArrow(checkNowContent());
+                });
+                function showContent(contentId) {
+                    // すべてのコンテンツを非表示にする
+                    document.getElementById('counselorContent').style.display = 'none';
+                    document.getElementById('aiContent').style.display = 'none';
+                    document.getElementById('userContent').style.display = 'none';
+
+                    // 指定されたコンテンツを表示する
+                    document.getElementById(contentId + 'Content').style.display = 'block';
+                }
+            </script>
+
+        </div>
+
+
+        {% endblock %}

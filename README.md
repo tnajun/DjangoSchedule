@@ -50,7 +50,8 @@ python manage.py createsuperuser
 
 Note: The pip freeze > requirements.txt was used to generate the dependencies file. If you encounter any dependency errors during installation, please make the necessary adjustments.
 
-Usage
+Usage:
+
 To properly understand the service operation, ensure that there are at least two users, one counselor and one general user. After registering, users will receive a verification email which they need to click to verify their account.
 
 Under Development:

@@ -51,11 +51,13 @@ Note: The pip freeze > requirements.txt was used to generate the dependencies fi
 Usage
 To properly understand the service operation, ensure that there are at least two users, one counselor and one general user. After registering, users will receive a verification email which they need to click to verify their account.
 
-Under Development
+Under Development:
+
 /schedule/edit_schedule/
 This page allows counselors to change their schedules but the link is not yet connected.
 
-Areas Needing Revision
+Areas Needing Revision:
+
 /accounts/userlist/
 The slide for page navigation does not function correctly when there are more than ten counselors. JavaScript improvements are needed for efficient page transitions within each category.
 The home page should be easily editable through flat pages or similar methods.

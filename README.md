@@ -67,8 +67,3 @@ This English version includes the specific changes you requested and provides a 
 
 
 
-
-Message ChatGPT
-
-
-ChatGPT can make mistakes. Consider

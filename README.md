@@ -42,10 +42,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 Run the following Django management commands:
 
-
+```
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
+```
+
 Note: The pip freeze > requirements.txt was used to generate the dependencies file. If you encounter any dependency errors during installation, please make the necessary adjustments.
 
 Usage

@@ -3,7 +3,7 @@ from .models import CustomUser, CounselingInfo, AIPrompt
 
 # from .models import PaymentCategory, Payment, Income, IncomeCategory
 # from django.utils import timezone
-from .widgets import CustomRadioSelect
+# from .widgets import CustomRadioSelect
 
 # class ProfileForm(forms.ModelForm):
 #     def __init__(self, *args, **kwargs):
@@ -113,8 +113,8 @@ class TransitionGraphSearchForm(forms.Form):
     #     widget=CustomRadioSelect,
     # )
 
-    graph_visible = forms.ChoiceField(required=False,
-                                      label='表示グラフ',
-                                      choices=SHOW_CHOICES,
-                                      widget=CustomRadioSelect
-                                      )
+    # graph_visible = forms.ChoiceField(required=False,
+    #                                   label='表示グラフ',
+    #                                   choices=SHOW_CHOICES,
+    #                                   widget=CustomRadioSelect
+    #                                   )
